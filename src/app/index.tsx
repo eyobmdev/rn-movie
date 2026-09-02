@@ -2,16 +2,8 @@ import { Text, View, StyleSheet } from "react-native";
 
 export default function Index() {
   return (
-    <View style={styles.container}>
-      <Text>Welcome to the Movies App</Text>
+    <View className="flex-1 justify-center items-center">
+      <Text className="text-4xl font-bold text-blue-500">Welcome to the Movies App</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
