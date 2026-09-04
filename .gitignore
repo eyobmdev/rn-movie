@@ -47,3 +47,5 @@ example
 .claude/
 .idea/
 .vscode/
+
+.env
