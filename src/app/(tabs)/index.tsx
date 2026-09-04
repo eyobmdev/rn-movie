@@ -19,13 +19,17 @@ export default function Index() {
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute z-0 w-full" />
-      <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
       <FlatList
         data={movies}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <MovieCard {...item} />}
         ListHeaderComponent={
           <>
+            <Image
+              source={icons.logo}
+              className="w-12 h-10 mt-20 mb-5 mx-auto"
+            />
+
             <SearchBar
               onPress={() => router.push("/search")}
               placeholder="Search for movies"
