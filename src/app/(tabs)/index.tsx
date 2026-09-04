@@ -37,6 +37,13 @@ export default function Index() {
         }
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 10 }}
         showsVerticalScrollIndicator={false}
+        numColumns={3}
+        columnWrapperStyle={{
+          justifyContent: "flex-start",
+          gap: 20,
+          paddingRight: 5,
+          marginTop: 10,
+        }}
         ListEmptyComponent={
           moviesLoading ? (
             <ActivityIndicator
