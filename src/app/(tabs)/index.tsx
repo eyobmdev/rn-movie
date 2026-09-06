@@ -18,7 +18,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-primary">
-      <Image source={images.bg} className="absolute z-0 w-full" />
+      <Image source={images.bg} className="flex-1 absolute z-0 w-full" />
       <FlatList
         data={movies}
         keyExtractor={(item) => item.id.toString()}
@@ -56,7 +56,7 @@ export default function Index() {
               className="mt-5 self-center"
             />
           ) : moviesError ? (
-            <Text className="mt-5 text-white">
+            <Text className="my-3 text-red-500 px-5">
               Error: {moviesError?.message}
             </Text>
           ) : null
