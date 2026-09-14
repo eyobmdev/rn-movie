@@ -3,12 +3,19 @@ import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
+import { getTrendingMovie } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
 export default function Index() {
   const router = useRouter();
+
+  const {
+    data: trendingMovie,
+    loading: trendingLoading,
+    error: trendingError,
+  } = useFetch(getTrendingMovie);
 
   const {
     data: movies,
@@ -34,6 +41,25 @@ export default function Index() {
               onPress={() => router.push("/search")}
               placeholder="Search for movies"
             />
+
+            {trendingMovie && (
+              <>
+                <View className="mt-10">
+                  <Text className="text-lg text-white font-bold mb-3">
+                    Trending Movies
+                  </Text>
+                </View>
+                <FlatList
+                  className="mt-3 mb-4"
+                  data={trendingMovie}
+                  renderItem={({ item, index }) => (
+                    <Text className="text-white text-sm">{item.title}</Text>
+                  )}
+                  keyExtractor={(item) => item.movie_id.toString()}
+                />
+              </>
+            )}
+
             <Text className="text-lg text-white font-bold mt-5 mb-3">
               The list of movies
             </Text>
@@ -49,15 +75,15 @@ export default function Index() {
           marginTop: 10,
         }}
         ListEmptyComponent={
-          moviesLoading ? (
+          moviesLoading || trendingLoading ? (
             <ActivityIndicator
               size="large"
               color="#0000ff"
               className="mt-5 self-center"
             />
-          ) : moviesError ? (
+          ) : moviesError || trendingError ? (
             <Text className="my-3 text-red-500 px-5">
-              Error: {moviesError?.message}
+              Error: {moviesError?.message || trendingError?.message}
             </Text>
           ) : null
         }
