@@ -1,12 +1,20 @@
 import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
+import TrendingCard from "@/components/TrendingCard";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
 import { getTrendingMovie } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 export default function Index() {
   const router = useRouter();
@@ -23,11 +31,14 @@ export default function Index() {
     error: moviesError,
   } = useFetch(() => fetchMovies({ query: "" }));
 
+  const hasTrending = Array.isArray(trendingMovie) && trendingMovie.length > 0;
+  const movieList = Array.isArray(movies) ? movies : [];
+
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="flex-1 absolute z-0 w-full" />
       <FlatList
-        data={movies}
+        data={movieList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <MovieCard {...item} />}
         ListHeaderComponent={
@@ -42,21 +53,27 @@ export default function Index() {
               placeholder="Search for movies"
             />
 
-            {trendingMovie && (
+            {hasTrending && (
               <>
                 <View className="mt-10">
                   <Text className="text-lg text-white font-bold mb-3">
                     Trending Movies
                   </Text>
                 </View>
-                <FlatList
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 16 }}
                   className="mt-3 mb-4"
-                  data={trendingMovie}
-                  renderItem={({ item, index }) => (
-                    <Text className="text-white text-sm">{item.title}</Text>
-                  )}
-                  keyExtractor={(item) => item.movie_id.toString()}
-                />
+                >
+                  {trendingMovie.map((item, index) => (
+                    <TrendingCard
+                      key={`${item.movie_id}-${index}`}
+                      movie={item}
+                      index={index}
+                    />
+                  ))}
+                </ScrollView>
               </>
             )}
 
