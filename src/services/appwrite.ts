@@ -8,6 +8,7 @@ const client = new Client()
   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!);
 
 const database = new Databases(client);
+
 type Movie = {
   id: number | string;
   title: string;
@@ -17,8 +18,9 @@ type Movie = {
 export const updateSearchCount = async (query: string, movie: Movie) => {
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
-      Query.equal("searchTerm", query),
+      Query.equal("movie_id", movie.id),
     ]);
+
     if (result.documents.length > 0) {
       const existMovie = result.documents[0];
 
@@ -38,7 +40,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
         count: 1,
         poster_url: movie.poster_path
           ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-          : null,
+          : "https://placehold.co/500x750/1a1a1a/FFFFFF.png?text=No+Poster",
       });
     }
   } catch (error) {
