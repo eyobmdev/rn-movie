@@ -1,14 +1,45 @@
 import { icons } from "@/constants/icons";
 import { fetchMovieDetail } from "@/services/api";
 import useFetch from "@/services/useFetch";
+import { router } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+interface MovieInfoProps {
+  label: string;
+  value?: string | number | null;
+}
+
+const MovieInfo = ({ label, value }: MovieInfoProps) => (
+  <View className="flex-col items-start justify-center mt-5">
+    <Text className="text-light-200 font-normal text-sm">{label}</Text>
+    <Text className="text-light-100 font-bold text-sm mt-2">
+      {value ?? "N/A"}
+    </Text>
+  </View>
+);
 
 const MovieDetail = () => {
   const id = useSearchParams().get("id");
   const { data: movie, loading } = useFetch(() => fetchMovieDetail(id ?? ""));
+
+  if (loading) {
+    return (
+      <View className="bg-primary flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <View className=" bg-primary flex-1">
+    <View className="bg-primary flex-1">
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <View>
           <Image
@@ -23,13 +54,12 @@ const MovieDetail = () => {
           <Text className="text-white font-bold text-lg">{movie?.title}</Text>
           <View className="flex-row items-center gap-x-1 mt-1">
             <Text className="text-light-200 text-sm">
-              {movie?.release_date.split("-")[0]}
+              {movie?.release_date?.split("-")[0]}
             </Text>
             <Text className="text-light-200 text-sm">{movie?.runtime}m</Text>
           </View>
           <View className="flex-row items-center bg-dark-100 px-2 py-1 mt-2 gap-x-1 rounded-md">
             <Image source={icons.star} className="size-4" />
-
             <Text className="text-white font-bold text-sm">
               {Math.round(movie?.vote_average ?? 0)}/10
             </Text>
@@ -37,12 +67,51 @@ const MovieDetail = () => {
               ({movie?.vote_count}) Votes
             </Text>
           </View>
+          <MovieInfo label="Overview" value={movie?.overview} />
+          <MovieInfo
+            label="Genre"
+            value={movie?.genres?.map((g) => g.name).join(" - ") || "N/A"}
+          />
+          <View className="flex flex-row justify-between w-1/2">
+            <MovieInfo
+              label="Budget"
+              value={
+                movie?.budget
+                  ? `$${movie.budget / 1_000_000} million`
+                  : undefined
+              }
+            />
+            <MovieInfo
+              label="Revenue"
+              value={
+                movie?.revenue
+                  ? `$${Math.round(movie.revenue / 1_000_000)} million`
+                  : undefined
+              }
+            />
+          </View>
+          <MovieInfo
+            label="Production Companies"
+            value={
+              movie?.production_companies?.map((c) => c.name).join(" - ") ||
+              "N/A"
+            }
+          />
         </View>
       </ScrollView>
+      <TouchableOpacity
+        className="absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
+        onPress={router.back}
+      >
+        <Image
+          source={icons.arrow}
+          className="size-5 mr-1 mt-0.5 rotate-180"
+          tintColor="#fff"
+        />
+        <Text className=" text-white font-semibold text-base"> Go back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 export default MovieDetail;
-
-const styles = StyleSheet.create({});
